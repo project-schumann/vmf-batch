@@ -7,6 +7,7 @@ from invalid_format_error import InvalidFormatError
 from vmf_converter.vmf_converter import VMFConverter
 from music21 import converter
 
+
 def get_task_list(conversion_descriptor):
     """
     Gets a list of tasks based on the files in the provided directory.
@@ -15,6 +16,7 @@ def get_task_list(conversion_descriptor):
     :return: A list of tasks to complete.
     """
     return [ConversionTask(conversion_descriptor, file_name) for file_name in os.listdir(conversion_descriptor.source)]
+
 
 def parse_arguments():
     """
@@ -31,6 +33,7 @@ def parse_arguments():
 
     return ConversionDescriptor(args.sourceDir, args.targetDir, args.outputFormat)
 
+
 def convert(task):
     """
     Performs the conversion task.
@@ -38,15 +41,21 @@ def convert(task):
     :param task: The conversion task to execute.
     """
     print(task.source + ' -> ' + task.target + ' [STARTED]')
-    score = converter.parse(task.source)
-    score.write(task.format, task.target)
-    print(task.source + ' -> ' + task.target + ' [DONE]')
+    
+    try:
+        score = converter.parse(task.source)
+        score.write(task.format, task.target)
+        print(task.source + ' -> ' + task.target + ' [DONE]')
+    except:
+        print('Unable to convert file: {0}. File Incompatible.'.format(task.source))
+
 
 def initialize_converter():
     """
     Initializes the music21 converter.
     """
     converter.registerSubconverter(VMFConverter)
+
 
 if __name__ == "__main__":
     conversion_descriptor = None
